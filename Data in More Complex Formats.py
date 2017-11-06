@@ -36,7 +36,27 @@ def make_request(data):
     return r.text
 
 
-def test():
+def extract_airports(page):
+    data = []
+    with open(page, "r") as html:
+        soup = BeautifulSoup(html, "lxml")
+        airport_list = soup.find(id='AirportList')
+
+        for airport in airport_list.find_all('option'):
+            if len(airport['value']) == 3 and airport['value'] != 'All':
+                data.append(airport['value'])
+
+    return data
+
+
+def test_extract_airports():
+    data = extract_airports(html_page)
+    assert len(data) == 15
+    assert "ATL" in data
+    assert "ABR" in data
+
+
+def test_extract_carriers():
     data = extract_carriers(html_page)
     assert len(data) == 16
     assert "FL" in data
@@ -44,4 +64,5 @@ def test():
 
 
 if __name__ == "__main__":
-    test()
+    test_extract_carriers()
+    test_extract_airports()
